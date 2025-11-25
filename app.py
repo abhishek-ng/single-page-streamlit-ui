@@ -2,11 +2,19 @@ import streamlit as st
 from streamlit_pdf_viewer import pdf_viewer
 import google.generativeai as genai
 import base64
+from dotenv import load_dotenv
+import os
 
 st.set_page_config(layout="wide")
 
+# Load .env file
+load_dotenv()
+
+# Read API Key securely
+api_key = os.getenv("GEMINI_API_KEY")
+
 # Configure Gemini
-genai.configure(api_key=st.secrets.get("GEMINI_API_KEY", None))
+genai.configure(api_key=api_key)
 
 st.title("PDF Text Extraction using Gemini")
 
