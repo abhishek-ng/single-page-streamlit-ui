@@ -1,2 +1,4 @@
 streamlit
 streamlit-pdf-viewer
+google-generativeai
+python-dotenv
