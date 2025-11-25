@@ -1,14 +1,22 @@
 import streamlit as st
 from streamlit_pdf_viewer import pdf_viewer
 import google.generativeai as genai
-import tempfile
+import base64
+from dotenv import load_dotenv
+import os
 
 st.set_page_config(layout="wide")
 
-# Configure Gemini
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+# Load .env file
+load_dotenv()
 
-st.title("PDF Text Extraction using Gemini (Correct File Upload Method)")
+# Read API Key securely
+api_key = os.getenv("GEMINI_API_KEY")
+
+# Configure Gemini
+genai.configure(api_key=api_key)
+
+st.title("PDF Text Extraction using Gemini")
 
 col1, col2 = st.columns([1, 1])
 
@@ -16,32 +24,31 @@ with col1:
     st.header("PDF Preview")
     uploaded_file = st.file_uploader("Upload PDF", type=["pdf"])
 
-    temp_path = None
+    pdf_bytes = None
 
     if uploaded_file:
-        # Write uploaded PDF to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(uploaded_file.read())
-            temp_path = tmp.name
-
-        pdf_viewer(open(temp_path, "rb").read())
+        pdf_bytes = uploaded_file.read()
+        pdf_viewer(pdf_bytes)
 
 with col2:
-    st.header("Extracted Text")
+    st.header("Gemini Extracted Text")
 
-    if uploaded_file and temp_path:
-        with st.spinner("Uploading PDF to Gemini…"):
-            uploaded_pdf = genai.upload_file(temp_path)
+    if uploaded_file and pdf_bytes:
+        # Encode PDF as base64 (required by Gemini for file input)
+        pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
 
         model = genai.GenerativeModel("gemini-1.5-flash")
 
-        with st.spinner("Extracting text…"):
+        with st.spinner("Extracting text using Gemini..."):
             response = model.generate_content(
                 [
-                    uploaded_pdf,
-                    "Extract all readable text from this PDF. Return only the plain text, no explanations."
+                    {
+                        "mime_type": "application/pdf",
+                        "data": pdf_b64
+                    },
+                    "Extract all readable text from this PDF. Return only clean text, no explanation."
                 ]
             )
 
         extracted_text = response.text
-        st.text_area("Extracted Text", extracted_text, height=700)
+        st.text_area("Text Extracted by Gemini", extracted_text, height=700)
