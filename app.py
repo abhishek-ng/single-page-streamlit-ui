@@ -37,7 +37,8 @@ with col2:
         # Encode PDF as base64 (required by Gemini for file input)
         pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-pro-vision")
+
 
         with st.spinner("Extracting text using Gemini..."):
             response = model.generate_content(
