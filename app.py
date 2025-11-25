@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_pdf_viewer import pdf_viewer
-import google.generativeai as genai
+from google import genai
 import base64
 from dotenv import load_dotenv
 import os
