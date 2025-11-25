@@ -1,4 +1,5 @@
 streamlit
 streamlit-pdf-viewer
 google-generativeai
-python-dotenv
+protobuf
+google-api-core
