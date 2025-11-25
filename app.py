@@ -49,12 +49,25 @@ def expensive_computation(user, preferences):
 
 def run_analysis():
     """Final analysis step"""
+
+    # ---- FIX: ensure required keys exist ----
+    if "mode" not in st.session_state.preferences:
+        st.session_state.preferences["mode"] = "Basic"
+
+    if "threshold" not in st.session_state.preferences:
+        st.session_state.preferences["threshold"] = 50
+
+    if not st.session_state.user:
+        st.error("User info is missing. Please go back and enter details.")
+        return
+    # -----------------------------------------
+
     with st.spinner("Running analysis..."):
         st.session_state.results = expensive_computation(
             st.session_state.user,
             st.session_state.preferences
         )
-    st.session_state.step = 3  # move to results page
+    st.session_state.step = 3
 
 
 # ----------------------------------
